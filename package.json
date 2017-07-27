@@ -1,0 +1,16 @@
+{
+  "name": "slackbot",
+  "version": "1.0.0",
+  "description": "The slack team bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp watch"
+  },
+  "author": "Pierre Mar",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "request": "^2.81.0"
+  }
+}

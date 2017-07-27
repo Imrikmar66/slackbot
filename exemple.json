@@ -1,0 +1,72 @@
+// { payload: '{"actions":[{"name":"choice","type":"button","value":"do_something"}],"callback_id":"t
+// est_1","team":{"id":"T6CV9UT5H","domain":"hentaigang"},"channel":{"id":"C6FDF7CMV","name":"apptest
+// "},"user":{"id":"U6DSZF76Y","name":"imrik66"},"action_ts":"1501148115.763721","message_ts":"150114
+// 7899.032482","attachment_id":"1","token":"DVzPzyeJZYAmYPh1GSOuGhtL","is_app_unfurl":false,"origina
+// l_message":{"text":"Que voulais vous faire ?","bot_id":"B6EC97CAY","attachments":[{"callback_id":"
+// test_1","fallback":"Probl\\u00e8me lors du choix","text":"Choisissez","id":1,"color":"000000","act
+// ions":[{"id":"1","name":"choice","text":"Do something","type":"button","value":"do_something","sty
+// le":""},{"id":"2","name":"choice","text":"Do nothing","type":"button","value":"do_nothing","style"
+// :""}]}],"type":"message","subtype":"bot_message","ts":"1501147899.032482"},"response_url":"https:\
+// \/\\/hooks.slack.com\\/actions\\/T6CV9UT5H\\/219499914663\\/qCKGIcElpxfAPsotNMbfheMc"}' }
+{
+    "actions": [
+        {
+            "name" : "choice",
+            "type" : "button",
+            "value" : "do_something"
+        }
+    ],
+    "callback_id" : "test_1",
+    "team" : {
+        "id" : "T6CV9UT5H",
+        "domain" : "hentaigang"
+    },
+    "channel": {
+        "id" : "C6FDF7CMV",
+        "name" : "apptest"
+    },
+    "user" : {
+        "id":"U6DSZF76Y",
+        "name":"imrik66"
+    },
+    "action_ts":"1501148115.763721",
+    "message_ts":"1501147899.032482",
+    "attachment_id":"1",
+    "token":"DVzPzyeJZYAmYPh1GSOuGhtL",
+    "is_app_unfurl":false,
+    "original_message":{
+        "text":"Que voulais vous faire ?",
+        "bot_id":"B6EC97CAY",
+        "attachments":[
+            {
+                "callback_id":"test_1",
+                "fallback":"Probl\\u00e8me lors du choix",
+                "text":"Choisissez",
+                "id":1,
+                "color":"000000",
+                "actions":[
+                    {
+                        "id":"1",
+                        "name":"choice",
+                        "text":"Do something",
+                        "type":"button",
+                        "value":"do_something",
+                        "style":""
+                    },
+                    {
+                        "id":"2",
+                        "name":"choice",
+                        "text":"Do nothing",
+                        "type":"button",
+                        "value":"do_nothing",
+                        "style":""
+                    }
+                ]
+            }
+        ],
+        "type":"message",
+        "subtype":"bot_message",
+        "ts":"1501147899.032482"
+    },
+    "response_url":"https:\\/\\/hooks.slack.com\\/actions\\/T6CV9UT5H\\/219499914663\\/qCKGIcElpxfAPsotNMbfheMc"
+}
