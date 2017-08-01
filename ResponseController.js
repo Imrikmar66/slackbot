@@ -41,6 +41,9 @@ class ResponseController {
         else if(response == "do_something") {
             return "C'est parti :smiley:";
         }
+        else if(response == "suicide_shamp") {
+            return "https://www.youtube.com/watch?v=qWpBduQKTMY :smiley:";
+        }
         else {
             return "Bon ben tant pis :sweat_smile:";
         }

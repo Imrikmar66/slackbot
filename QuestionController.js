@@ -35,10 +35,12 @@ class QuestionController {
          
         var action_1 = new MessageLib.ActionButton("choice", "Do something", "do_something");
         var action_2 = new MessageLib.ActionButton("choice", "Do nothing", "do_nothing");
+        var action_3 = new MessageLib.ActionButton("choice", "Suicide Shamp", "suicide_shamp");
 
         var attachment = new MessageLib.Attachment("Choisissez", "Problème lors du choix", "test_1");
         attachment.addAction(action_1);
         attachment.addAction(action_2);
+        attachment.addAction(action_3);
 
         var message = new MessageLib.Message("Que voulais vous faire ?");
         message.addAttachement(attachment);
