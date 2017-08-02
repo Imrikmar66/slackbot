@@ -13,7 +13,7 @@ app.use(bodyParser.json({  extended: false }));
 
 // respond with "hello world" when a GET request is made to the homepage
 app
-    .post('/the_receiver', function(req, res){ //triggered by slack
+    .post('/the_receiver', function(req, res){
         
         var payload = req.body.payload;
         var obj = JSON.parse(payload);
