@@ -4,6 +4,7 @@ class Message {
 
         this.text = text;
         this.attachments = attachments;
+        this.token = "xoxb-220309870224-4e9azl0jBQPNoV92XifBaUNg";
 
     }
 
@@ -11,16 +12,18 @@ class Message {
         this.attachments.push(attachment);
     }
 
-    get(){
+    get(channel){
         return {
             text: this.text,
-            attachments : (() => {
+            attachments : JSON.stringify( (() => { //TEMP JSON STRINGIFY
                 var arr = [];
                 this.attachments.forEach(function(attachment, key) {
                     arr.push( attachment.get() );
                 });
                 return arr;
-            })()
+            })() ),
+            token: this.token,
+            channel: channel
         }
     }
 
@@ -39,6 +42,7 @@ class Attachment {
         this.color = color;
         this.attachment_type = attachment_type;
         this.actions = [];
+        this.extra = false;
 
     }
 
@@ -87,7 +91,30 @@ class Action {
 class ActionButton extends Action {
 
     constructor(name, text, value, confirm = {}){
-        super("button", name, text, value, confirm)
+        super("button", name, text, value, confirm);
+    }
+
+}
+class ActionSelector extends Action {
+
+    constructor(name, text, confirm = {}){
+        super("select", name, text, false, confirm);
+        this.options = [];
+    }
+
+    addOption(text, value){
+        let option = {
+            text: text,
+            value: value
+        };
+        this.options.push(option);
+    }
+
+    get(){
+        let obj = super.get();
+        delete obj.value;
+        Object.assign(obj, { options: this.options } );
+        return obj;
     }
 
 }
@@ -96,5 +123,6 @@ module.exports = {
     Message: Message,
     Attachment: Attachment,
     Action: Action,
-    ActionButton: ActionButton
+    ActionButton: ActionButton,
+    ActionSelector: ActionSelector
 };

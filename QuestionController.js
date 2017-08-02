@@ -1,13 +1,26 @@
 var request = require("./request");
-var MessageLib = require("./message");
+var MessageLib = require("./Message");
+var ResponseController = require("./ResponseController");
+var MusicManager = require("./MusicManager");
 
 class QuestionController {
 
-    constructor(question, hook = QuestionController.WEBHOOKS.apptest ){
+    constructor(question, event ){
         this.question = question; 
         
         this.host = 'https://hooks.slack.com/services/';
-        this.path = hook;
+        this.event = event;
+        this.channel = event.channel;
+        
+    }
+
+    /**
+     * @description requesting server with question-formatted
+     * @returns {Promise}
+     */
+    send(){  
+        const promise = request.postFormEncoded("https://slack.com/api", "/chat.postMessage", this.ask());
+        return promise;
     }
 
     /**
@@ -18,41 +31,80 @@ class QuestionController {
        return this[this.question]();
     }
 
-    /**
-     * @description send json-formatted question to slack API
-     * @returns {Promise}
-     */
-    send() {
-        var promise = request.post(this.host, this.path, this.ask());
-        return promise;
+    add_type(){
+
+        let index = this.event.text.toLowerCase().search('#');
+        if(index < 0){
+            var message = new MessageLib.Message("Il manque le type à ajouter avec hash '#' :thinking_face:");
+            return message.get(this.channel);
+        }
+
+        var type = this.event.text.substr(index, this.event.text.length);
+        type = type.split(" ")[0];
+
+        let musicM = new MusicManager();
+        musicM.addType(type);
+
+        var answer = "";
+        if(musicM.register())
+            answer = "Type de musique ajouté " + type + " :sunglasses:";
+        else
+            answer = "Probleme pendant l'ajout ... :confused:";
+
+        return new MessageLib.Message(answer).get(this.channel);
     }
 
-    /**
-     * @description main parts of controllers - associated actions methods
-     * @returns {Object}
-     */
-    test_1(){
-         
-        var action_1 = new MessageLib.ActionButton("choice", "Do something", "do_something");
-        var action_2 = new MessageLib.ActionButton("choice", "Do nothing", "do_nothing");
-        var action_3 = new MessageLib.ActionButton("choice", "Suicide Shamp", "suicide_shamp");
+    add_music(){
 
-        var attachment = new MessageLib.Attachment("Choisissez", "Problème lors du choix", "test_1");
-        attachment.addAction(action_1);
-        attachment.addAction(action_2);
-        attachment.addAction(action_3);
+        let index = this.event.text.toLowerCase().search("http");
+        if(index < 0){
+            var message = new MessageLib.Message("Il manque un lien pour que j'ajoute une musique :thinking_face:");
+            return message.get(this.channel);
+        }
 
-        var message = new MessageLib.Message("Que voulais vous faire ?");
+        var link = this.event.text.substr(index, this.event.text.length);
+        link = link.split(">")[0];
+
+        var attachment = new MessageLib.Attachment("Choisissez", "Problème lors du choix", "music|"+link);
+
+        let musics = new MusicManager().musics;
+
+        let action = new MessageLib.ActionSelector("music_type", "Type");
+        Object.keys(musics).forEach((element) => {
+            
+            let uper = element.charAt(0).toUpperCase() + element.slice(1);
+            action.addOption(uper, element);
+
+        });
+
+        attachment.addAction(action);
+        
+        var message = new MessageLib.Message("Quel type de musique ?");
         message.addAttachement(attachment);
 
-        return message.get();
+        return message.get(this.channel);
+    
+    }
+
+    listen(){
+
+        var action = new MessageLib.ActionSelector("music", "I need some music");
+        
+        let musics = new MusicManager().musics;
+        Object.keys(musics).forEach((element) => {
+            let uper = element.charAt(0).toUpperCase() + element.slice(1);
+            action.addOption(uper, element);
+        });
+
+        var attachment = new MessageLib.Attachment("Choisissez", "Problème lors du choix", "listen_music");
+        attachment.addAction(action);
+
+        var message = new MessageLib.Message("On écoute quoi ? :smiley:");
+        message.addAttachement(attachment);
+
+        return message.get(this.channel);
     }
 
 }
-
-QuestionController.WEBHOOKS = {
-    general : 'T6CV9UT5H/B6E02PUNR/Y3Dl71hessdcNL1rpKZaaXTN',
-    apptest: 'T6CV9UT5H/B6EC97CAY/jK4GUQcjRE8wcLtAvZWBXfKJ'
-};
 
 module.exports = QuestionController;

@@ -1,37 +1,18 @@
 var express = require('express');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+var request = require('./request.js');
+var CommandController = require("./CommandController");
 var QuestionController = require("./QuestionController");
 var ResponseController = require("./ResponseController");
+var MessageEvent = require("./MessageEvent");
+var MusicManager = require("./MusicManager");
 var app = express();
 
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({  extended: false }));
 
 // respond with "hello world" when a GET request is made to the homepage
 app
-    .get('/', function(req, res) {
-        res.send('hello world');
-    })
-    .get('/the_requester', function(req, res) { //Trigger a request to slack from anywhere
-        
-        var ctrl = new QuestionController("test_1");
-        var promise = ctrl.send();
-        promise
-            .then((data) => {
-                res.send(data);
-            })
-            .catch( (msg) => {
-                console.log(msg);
-                res.send( "Error :" + msg );
-            });
-        
-    })
-    .post('/exia_requester', function(req, res) { //triggered by slack
-        
-        var ctrl = new QuestionController("test_1");
-        var question = ctrl.ask();
-        res.send( question );
-        
-    })
     .post('/the_receiver', function(req, res){ //triggered by slack
         
         var payload = req.body.payload;
@@ -41,6 +22,47 @@ app
 
         res.send( ctrl.answer() );
         
+    })
+    .post('/eventReceiver', function(req, res){
+
+        var payload = req.body;
+        
+        var MsgEvent = new MessageEvent(payload);
+
+        if(MsgEvent.event.message || MsgEvent.event.bot_id || MsgEvent.deleted_ts ){
+            res.send('');
+            return;
+        }
+
+        if(MsgEvent.isMentionned() || MsgEvent.contains(['exia']) || MsgEvent.contains(['exiabot']) || MsgEvent.event.channel == "D6GCMH3LH" ) {
+
+            var ctrl = null;
+
+            if( MsgEvent.contains(['add', 'music', 'type']) || MsgEvent.contains(['ajouter', 'musique', 'type']) || MsgEvent.contains(['ajoute', 'musique', 'type']) )
+                var ctrl = new QuestionController("add_type", MsgEvent.event);
+
+            else if( MsgEvent.contains(['add', 'music']) || MsgEvent.contains(['ajouter', 'musique']) || MsgEvent.contains(['ajoute', 'musique']) )
+                var ctrl = new QuestionController("add_music", MsgEvent.event);
+
+            else if( MsgEvent.contains(['music']) || MsgEvent.contains(['musique']) )
+                var ctrl = new QuestionController("listen", MsgEvent.event);
+            
+            if(ctrl instanceof QuestionController){
+                ctrl.send()
+                    .then( (data) => {
+                        res.send(data);
+                    } )
+                    .catch( (error) => {
+                        res.send(error);
+                    } );
+            }
+            else {
+                res.send('');
+            }
+        }
+        else
+            res.send('');
+
     });
     
 var listener = app.listen(8888, function(){
